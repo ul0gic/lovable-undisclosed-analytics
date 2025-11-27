@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant User as User Browser
+    participant App as [app].lovable.app
+    participant Proxy as Lovable Infrastructure<br/>(Cloudflare)
+    participant TB as Tinybird<br/>(api.tinybird.co)
+
+    Note over User,App: What the user/developer sees
+
+    User->>App: Visit page
+    App-->>User: HTML + flock.js script tag
+    User->>App: GET /~flock.js
+    App-->>User: Tracking script (21KB)
+
+    Note over User,TB: Data collection (appears first-party)
+
+    User->>App: POST /~api/analytics<br/>{"action":"page_hit",...}
+
+    Note over App,Proxy: What is hidden from user
+
+    App->>Proxy: Forward request
+    Proxy->>Proxy: Inject Tinybird auth token
+    Proxy->>TB: POST /v0/events?name=analytics_events&token=xxx<br/>{"action":"page_hit",...}
+    TB-->>Proxy: 200 "Done"
+    Proxy-->>App: 200 "Done"
+    App-->>User: 200 "Done"
+
+    Note over User,App: User only sees first-party domain

@@ -1,0 +1,75 @@
+flowchart TB
+    subgraph Developer["Lovable Customer (Site Owner)"]
+        DEV[Developer builds app<br/>using Lovable platform]
+        DEPLOY[Clicks Deploy]
+    end
+
+    subgraph Build["Lovable Build Process (Hidden)"]
+        BUILD[Build Process]
+        INJECT[Inject flock.js script tag<br/>into HTML output]
+        BUNDLE[Final Production Bundle]
+    end
+
+    subgraph Deployed["Deployed Site: [app].lovable.app"]
+        HTML[index.html]
+        FLOCK["/~flock.js (21KB)"]
+        PROXY_EP["/~api/analytics endpoint"]
+    end
+
+    subgraph Visitors["Unknowing Site Visitors"]
+        V1[Visitor 1]
+        V2[Visitor 2]
+        V3[Visitor N...]
+    end
+
+    subgraph Collection["Data Collection (Per Visitor)"]
+        COOKIE[Set session-id cookie]
+        COLLECT[Collect: user-agent, locale,<br/>country, referrer, URL]
+        HIJACK[Hijack history.pushState<br/>to track all navigation]
+    end
+
+    subgraph Proxy["Hidden Proxy Architecture"]
+        FIRST[POST to /~api/analytics<br/>Appears as first-party request]
+        CLOUD[Cloudflare / Lovable Infra]
+        TOKEN[Inject Tinybird auth token<br/>server-side]
+    end
+
+    subgraph Tinybird["Tinybird (Undisclosed Sub-processor)"]
+        TB_API[api.tinybird.co/v0/events]
+        TB_DS[(analytics_events<br/>datasource)]
+    end
+
+    %% Flow
+    DEV --> DEPLOY
+    DEPLOY --> BUILD
+    BUILD --> INJECT
+    INJECT --> BUNDLE
+    BUNDLE --> HTML
+    HTML --> FLOCK
+    HTML --> PROXY_EP
+
+    V1 & V2 & V3 -->|visit site| HTML
+    HTML -->|loads| FLOCK
+    FLOCK --> COOKIE
+    FLOCK --> COLLECT
+    FLOCK --> HIJACK
+    COLLECT --> FIRST
+    FIRST --> CLOUD
+    CLOUD --> TOKEN
+    TOKEN --> TB_API
+    TB_API --> TB_DS
+
+    %% Annotations
+    DEV -.-|"❌ NOT INFORMED<br/>of tracking injection"| INJECT
+    V1 -.-|"❌ NOT INFORMED<br/>of data collection"| COLLECT
+    FIRST -.-|"❌ HIDDEN<br/>appears same-origin"| TOKEN
+    TB_API -.-|"❌ NOT LISTED<br/>in sub-processors"| TB_DS
+
+    %% Styling
+    style INJECT fill:#fcc,stroke:#c00,stroke-width:2px
+    style TOKEN fill:#fcc,stroke:#c00,stroke-width:2px
+    style Tinybird fill:#fee,stroke:#c00,stroke-width:2px
+    style TB_API fill:#fcc,stroke:#c00
+    style TB_DS fill:#fcc,stroke:#c00
+    style HIJACK fill:#ffc,stroke:#c90
+    style COOKIE fill:#ffc,stroke:#c90
