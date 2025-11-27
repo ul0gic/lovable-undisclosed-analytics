@@ -70,8 +70,8 @@ flowchart TB
 
     subgraph Site["Deployed Application"]
         HTML[index.html]
-        FLOCK[/~flock.js]
-        PROXY[/~api/analytics]
+        FLOCK["/~flock.js"]
+        PROXY["/~api/analytics"]
     end
 
     subgraph User["End User (Visitor)"]
