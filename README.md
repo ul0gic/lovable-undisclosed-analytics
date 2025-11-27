@@ -93,9 +93,16 @@ flowchart TB
     BROWSER -.->|"NOT INFORMED"| FLOCK
     PROXY -.->|"NOT DISCLOSED"| TB
 
-    style INJECT fill:#fcc,stroke:#c00
-    style TB fill:#fcc,stroke:#c00
-    style PROXY fill:#ffc,stroke:#c90
+    style DEV fill:#444,stroke:#333,color:#fff
+    style DEPLOY fill:#444,stroke:#333,color:#fff
+    style INJECT fill:#c00,stroke:#900,color:#fff
+    style HTML fill:#444,stroke:#333,color:#fff
+    style FLOCK fill:#444,stroke:#333,color:#fff
+    style PROXY fill:#c90,stroke:#a70,color:#fff
+    style BROWSER fill:#444,stroke:#333,color:#fff
+    style TB fill:#c00,stroke:#900,color:#fff
+
+    linkStyle 8,9,10 stroke:#c00,stroke-width:2px
 ```
 
 ### Proxy Sequence
